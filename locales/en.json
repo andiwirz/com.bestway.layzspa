@@ -1,0 +1,16 @@
+{
+  "pair": {
+    "error": {
+      "login_failed": "Login failed on all servers (EU, US, Global). Please check your email address and password.",
+      "wrong_password": "Wrong password. Please try again.",
+      "not_authenticated": "Please log in first.",
+      "fetch_devices_failed": "Could not fetch devices from the Bestway cloud.",
+      "no_devices": "No devices found in your Bestway account. Make sure your spa is set up in the Bestway Smart Hub app."
+    }
+  },
+  "error": {
+    "control_failed": "Could not send command to the spa. Please check the connection.",
+    "credentials_missing": "Login credentials are missing. Please remove and re-add the device.",
+    "hydrojet_not_supported": "HydroJet is not supported by this spa model."
+  }
+}

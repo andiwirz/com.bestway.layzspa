@@ -1,0 +1,656 @@
+{
+  "id": "com.bestway.layzspa",
+  "version": "1.0.1",
+  "compatibility": ">=12.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Bestway Lay-Z-Spa",
+    "de": "Bestway Lay-Z-Spa"
+  },
+  "description": {
+    "en": "Smart control for your Lay-Z-Spa — temperature, massage jets and filter at your fingertips.",
+    "de": "Smarte Steuerung für deinen Lay-Z-Spa – Temperatur, Massagedüsen und Filter immer griffbereit."
+  },
+  "brandColor": "#0063A6",
+  "tags": {
+    "en": [
+      "spa",
+      "hot tub",
+      "pool",
+      "bestway",
+      "lay-z-spa",
+      "whirlpool"
+    ],
+    "de": [
+      "spa",
+      "whirlpool",
+      "pool",
+      "bestway",
+      "lay-z-spa"
+    ]
+  },
+  "category": [
+    "appliances"
+  ],
+  "permissions": [],
+  "author": {
+    "name": "Andi",
+    "email": "andi@wirzfamily.ch"
+  },
+  "source": "https://github.com/andiwirz/com.bestway.layzspa",
+  "bugs": {
+    "url": "https://github.com/andiwirz/com.bestway.layzspa/issues"
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "AndiWirz"
+      }
+    }
+  },
+  "support": "https://github.com/andiwirz/com.bestway.layzspa/issues",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "capabilities": {
+    "bestway_error_message": {
+      "type": "string",
+      "title": {
+        "en": "Error Details",
+        "de": "Fehlerdetails"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/bestway_error_message.svg"
+    },
+    "bestway_temp_reached": {
+      "type": "boolean",
+      "title": {
+        "en": "Target Temperature Reached",
+        "de": "Zieltemperatur erreicht"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/bestway_temp_reached.svg"
+    }
+  },
+  "flow": {
+    "triggers": [
+      {
+        "id": "spa_temp_reached",
+        "title": {
+          "en": "Target temperature reached",
+          "de": "Zieltemperatur erreicht"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "temperature",
+            "type": "number",
+            "title": {
+              "en": "Temperature (°C)",
+              "de": "Temperatur (°C)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "spa_error_triggered",
+        "title": {
+          "en": "Spa error occurred",
+          "de": "Spa-Fehler aufgetreten"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "error_message",
+            "type": "string",
+            "title": {
+              "en": "Error message",
+              "de": "Fehlermeldung"
+            }
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "spa_heating_active",
+        "title": {
+          "en": "Heating is !{active|not active}",
+          "de": "Heizung ist !{aktiv|nicht aktiv}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ]
+      },
+      {
+        "id": "spa_filter_active",
+        "title": {
+          "en": "Filter is !{running|not running}",
+          "de": "Filter ist !{aktiv|nicht aktiv}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ]
+      },
+      {
+        "id": "spa_error_active",
+        "title": {
+          "en": "Spa has !{an error|no error}",
+          "de": "Spa hat !{einen Fehler|keinen Fehler}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ]
+      },
+      {
+        "id": "spa_temp_above",
+        "title": {
+          "en": "Water temperature is !{above|not above} [[temperature]] °C",
+          "de": "Wassertemperatur ist !{über|nicht über} [[temperature]] °C"
+        },
+        "titleFormatted": {
+          "en": "Water temperature is !{above|not above} [[temperature]] °C",
+          "de": "Wassertemperatur ist !{über|nicht über} [[temperature]] °C"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          },
+          {
+            "name": "temperature",
+            "type": "number",
+            "title": {
+              "en": "Temperature (°C)",
+              "de": "Temperatur (°C)"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 0.5
+          }
+        ]
+      },
+      {
+        "id": "spa_temp_below",
+        "title": {
+          "en": "Water temperature is !{below|not below} [[temperature]] °C",
+          "de": "Wassertemperatur ist !{unter|nicht unter} [[temperature]] °C"
+        },
+        "titleFormatted": {
+          "en": "Water temperature is !{below|not below} [[temperature]] °C",
+          "de": "Wassertemperatur ist !{unter|nicht unter} [[temperature]] °C"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          },
+          {
+            "name": "temperature",
+            "type": "number",
+            "title": {
+              "en": "Temperature (°C)",
+              "de": "Temperatur (°C)"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 0.5
+          }
+        ]
+      },
+      {
+        "id": "spa_temp_reached_condition",
+        "title": {
+          "en": "Target temperature is !{reached|not reached}",
+          "de": "Zieltemperatur ist !{erreicht|nicht erreicht}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ]
+      },
+      {
+        "id": "spa_airjet_active",
+        "title": {
+          "en": "AirJet is !{active|not active}",
+          "de": "AirJet ist !{aktiv|nicht aktiv}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "spa_set_hydrojet",
+        "title": {
+          "en": "Turn HydroJet on or off",
+          "de": "HydroJet ein- oder ausschalten"
+        },
+        "titleFormatted": {
+          "en": "Turn HydroJet [[onoff]]",
+          "de": "HydroJet [[onoff]] schalten"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          },
+          {
+            "name": "onoff",
+            "type": "dropdown",
+            "title": {
+              "en": "State",
+              "de": "Zustand"
+            },
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "on",
+                  "de": "ein"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "off",
+                  "de": "aus"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spa_set_heating",
+        "title": {
+          "en": "Turn heating on or off",
+          "de": "Heizung ein- oder ausschalten"
+        },
+        "titleFormatted": {
+          "en": "Turn heating [[onoff]]",
+          "de": "Heizung [[onoff]] schalten"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          },
+          {
+            "name": "onoff",
+            "type": "dropdown",
+            "title": {
+              "en": "State",
+              "de": "Zustand"
+            },
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "on",
+                  "de": "ein"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "off",
+                  "de": "aus"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spa_set_filter",
+        "title": {
+          "en": "Turn filter on or off",
+          "de": "Filter ein- oder ausschalten"
+        },
+        "titleFormatted": {
+          "en": "Turn filter [[onoff]]",
+          "de": "Filter [[onoff]] schalten"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          },
+          {
+            "name": "onoff",
+            "type": "dropdown",
+            "title": {
+              "en": "State",
+              "de": "Zustand"
+            },
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "on",
+                  "de": "ein"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "off",
+                  "de": "aus"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "spa_set_airjet",
+        "title": {
+          "en": "Set AirJet level",
+          "de": "AirJet-Stufe setzen"
+        },
+        "titleFormatted": {
+          "en": "Set AirJet level to [[level]]",
+          "de": "AirJet-Stufe auf [[level]] setzen"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          },
+          {
+            "name": "level",
+            "type": "dropdown",
+            "title": {
+              "en": "Level",
+              "de": "Stufe"
+            },
+            "values": [
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "de": "Aus"
+                }
+              },
+              {
+                "id": "low",
+                "label": {
+                  "en": "Low",
+                  "de": "Niedrig"
+                }
+              },
+              {
+                "id": "high",
+                "label": {
+                  "en": "High",
+                  "de": "Hoch"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "id": "lay-z-spa",
+      "name": {
+        "en": "Lay-Z-Spa",
+        "de": "Lay-Z-Spa"
+      },
+      "class": "other",
+      "capabilities": [
+        "onoff.airjet_low",
+        "onoff.airjet_high",
+        "onoff",
+        "measure_temperature",
+        "target_temperature",
+        "onoff.hydrojet",
+        "onoff.filter",
+        "onoff.heating",
+        "onoff.locked",
+        "alarm_generic",
+        "bestway_error_message",
+        "bestway_temp_reached"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 20,
+          "max": 40,
+          "step": 1
+        },
+        "onoff.heating": {
+          "title": {
+            "en": "Heating",
+            "de": "Heizung"
+          },
+          "uiComponent": "button"
+        },
+        "onoff.airjet_low": {
+          "title": {
+            "en": "AirJet Massage Low",
+            "de": "AirJet Massage Low"
+          },
+          "uiComponent": "button"
+        },
+        "onoff.airjet_high": {
+          "title": {
+            "en": "AirJet Massage High",
+            "de": "AirJet Massage High"
+          },
+          "uiComponent": "button"
+        },
+        "onoff.hydrojet": {
+          "title": {
+            "en": "HydroJet Massage",
+            "de": "HydroJet Massage"
+          },
+          "uiComponent": "button"
+        },
+        "onoff.filter": {
+          "title": {
+            "en": "Filter",
+            "de": "Filter"
+          },
+          "uiComponent": "button"
+        },
+        "onoff.locked": {
+          "title": {
+            "en": "Panel Lock",
+            "de": "Tastensperre"
+          },
+          "uiComponent": "sensor",
+          "icon": "/assets/capabilities/locked.svg"
+        },
+        "alarm_generic": {
+          "title": {
+            "en": "Error",
+            "de": "Fehler"
+          }
+        }
+      },
+      "settings": [
+        {
+          "id": "poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Poll interval (seconds)",
+            "de": "Abfrageintervall (Sekunden)"
+          },
+          "hint": {
+            "en": "How often the app fetches updates from the Bestway cloud (10–300 seconds). Default: 30.",
+            "de": "Wie oft die App Updates aus der Bestway-Cloud abruft (10–300 Sekunden). Standard: 30."
+          },
+          "value": 30,
+          "attr": {
+            "min": 10,
+            "max": 300
+          }
+        },
+        {
+          "id": "region",
+          "type": "dropdown",
+          "label": {
+            "en": "Server region",
+            "de": "Server-Region"
+          },
+          "hint": {
+            "en": "Gizwits API region. Change only if login fails with the automatically detected region.",
+            "de": "Gizwits API-Region. Nur ändern, wenn die Anmeldung mit der automatisch erkannten Region fehlschlägt."
+          },
+          "value": "eu",
+          "values": [
+            {
+              "id": "eu",
+              "label": {
+                "en": "Europe (EU)",
+                "de": "Europa (EU)"
+              }
+            },
+            {
+              "id": "us",
+              "label": {
+                "en": "United States",
+                "de": "USA"
+              }
+            },
+            {
+              "id": "global",
+              "label": {
+                "en": "Global",
+                "de": "Global"
+              }
+            }
+          ]
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/lay-z-spa/assets/images/small.png",
+        "large": "/drivers/lay-z-spa/assets/images/large.png",
+        "xlarge": "/drivers/lay-z-spa/assets/images/xlarge.png"
+      },
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "title": {
+            "en": "Update Bestway credentials",
+            "de": "Bestway-Zugangsdaten aktualisieren"
+          },
+          "options": {
+            "usernameLabel": {
+              "en": "Email address",
+              "de": "E-Mail-Adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "email@example.com",
+              "de": "email@beispiel.de"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "de": "Passwort"
+            }
+          }
+        }
+      ],
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "title": {
+            "en": "Sign in to Bestway",
+            "de": "Bei Bestway anmelden"
+          },
+          "options": {
+            "usernameLabel": {
+              "en": "Email address",
+              "de": "E-Mail-Adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "email@example.com",
+              "de": "email@beispiel.de"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "de": "Passwort"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "title": {
+            "en": "Select your Lay-Z-Spa",
+            "de": "Lay-Z-Spa auswählen"
+          },
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices",
+          "title": {
+            "en": "Add your Lay-Z-Spa",
+            "de": "Lay-Z-Spa hinzufügen"
+          }
+        }
+      ]
+    }
+  ]
+}

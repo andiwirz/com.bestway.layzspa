@@ -4,5 +4,8 @@
   },
   "1.0.1": {
     "en": "new icons and images"
+  },
+  "1.0.2": {
+    "en": "Fixed: Airjet attrs, token 9004/9042 handling, panel lock icon, poll interval writeback — New: panel lock flow condition, HydroJet hint, unknown model warning, App Store readmes"
   }
 }

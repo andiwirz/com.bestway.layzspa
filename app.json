@@ -1,6 +1,6 @@
 {
   "id": "com.bestway.layzspa",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "compatibility": ">=12.0.0",
   "sdk": 3,
   "platforms": [
@@ -79,6 +79,17 @@
       "setable": false,
       "uiComponent": "sensor",
       "icon": "/assets/capabilities/bestway_temp_reached.svg"
+    },
+    "bestway_locked": {
+      "type": "boolean",
+      "title": {
+        "en": "Panel Lock",
+        "de": "Tastensperre"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/locked.svg"
     }
   },
   "flow": {
@@ -260,6 +271,20 @@
             "filter": "driver_id=lay-z-spa"
           }
         ]
+      },
+      {
+        "id": "spa_locked",
+        "title": {
+          "en": "Panel lock is !{active|not active}",
+          "de": "Tastensperre ist !{aktiv|nicht aktiv}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=lay-z-spa"
+          }
+        ]
       }
     ],
     "actions": [
@@ -272,6 +297,10 @@
         "titleFormatted": {
           "en": "Turn HydroJet [[onoff]]",
           "de": "HydroJet [[onoff]] schalten"
+        },
+        "hint": {
+          "en": "Only available on HydroJet spa models. On AirJet models this action will return an error.",
+          "de": "Nur für HydroJet-Spa-Modelle verfügbar. Bei AirJet-Modellen gibt diese Aktion einen Fehler zurück."
         },
         "args": [
           {
@@ -457,7 +486,7 @@
         "onoff.hydrojet",
         "onoff.filter",
         "onoff.heating",
-        "onoff.locked",
+        "bestway_locked",
         "alarm_generic",
         "bestway_error_message",
         "bestway_temp_reached"
@@ -502,14 +531,6 @@
             "de": "Filter"
           },
           "uiComponent": "button"
-        },
-        "onoff.locked": {
-          "title": {
-            "en": "Panel Lock",
-            "de": "Tastensperre"
-          },
-          "uiComponent": "sensor",
-          "icon": "/assets/capabilities/locked.svg"
         },
         "alarm_generic": {
           "title": {
@@ -569,6 +590,69 @@
                 "en": "Global",
                 "de": "Global"
               }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Troubleshooting",
+            "de": "Fehlerbehebung"
+          },
+          "children": [
+            {
+              "id": "debug_last_sync",
+              "type": "label",
+              "label": {
+                "en": "Last sync",
+                "de": "Letzter Sync"
+              },
+              "value": "–"
+            },
+            {
+              "id": "debug_status",
+              "type": "label",
+              "label": {
+                "en": "Status",
+                "de": "Status"
+              },
+              "value": "–"
+            },
+            {
+              "id": "debug_product",
+              "type": "label",
+              "label": {
+                "en": "Device model",
+                "de": "Gerätemodell"
+              },
+              "value": "–"
+            },
+            {
+              "id": "debug_region",
+              "type": "label",
+              "label": {
+                "en": "Active region",
+                "de": "Aktive Region"
+              },
+              "value": "–"
+            },
+            {
+              "id": "debug_errors",
+              "type": "label",
+              "label": {
+                "en": "Active error codes",
+                "de": "Aktive Fehlercodes"
+              },
+              "value": "–"
+            },
+            {
+              "id": "debug_raw",
+              "type": "label",
+              "label": {
+                "en": "Raw device attributes",
+                "de": "Rohe Gerätewerte"
+              },
+              "value": "–"
             }
           ]
         }

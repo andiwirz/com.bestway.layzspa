@@ -57,6 +57,11 @@ class LaZSpaDriver extends Homey.Driver {
         args.device.getCapabilityValue('onoff.airjet_high') === true,
       );
 
+    this.homey.flow.getConditionCard('spa_locked')
+      .registerRunListener((args) =>
+        args.device.getCapabilityValue('bestway_locked') === true,
+      );
+
     // ── Flow actions ─────────────────────────────────────────────────────
     // Action listeners return Promises directly — no need for async wrappers.
 

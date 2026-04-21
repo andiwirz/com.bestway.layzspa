@@ -11,6 +11,7 @@
   "error": {
     "control_failed": "Could not send command to the spa. Please check the connection.",
     "credentials_missing": "Login credentials are missing. Please remove and re-add the device.",
-    "hydrojet_not_supported": "HydroJet is not supported by this spa model."
+    "hydrojet_not_supported": "HydroJet is not supported by this spa model.",
+    "device_offline": "Device is offline."
   }
 }

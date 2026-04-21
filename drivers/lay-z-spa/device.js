@@ -67,6 +67,13 @@ class LaZSpaDevice extends Homey.Device {
     const productName  = this.getData().productName ?? 'Hydrojet_Pro';
     this._attrMap      = getAttrMap(productName);
 
+    if (this._attrMap.isUnknown) {
+      this.error(
+        `⚠️ Unknown product name "${productName}" — using Hydrojet_Pro fallback mapping.` +
+        ' Capabilities may not work correctly. Please report this model name.',
+      );
+    }
+
     this._client       = new BestwayClient({ region: this._resolveRegion() });
     this._pollTimer    = null;
     this._pollFailCount = 0;
@@ -104,7 +111,7 @@ class LaZSpaDevice extends Homey.Device {
       'onoff.hydrojet',
       'onoff.filter',
       'onoff.heating',
-      'onoff.locked',
+      'bestway_locked',
       'alarm_generic',
       'bestway_error_message',
       'bestway_temp_reached',
@@ -163,7 +170,8 @@ class LaZSpaDevice extends Homey.Device {
     }
 
     // Remove legacy capabilities.
-    for (const cap of ['bestway_airjet']) {
+    // onoff.locked was replaced by bestway_locked (custom capability with icon support).
+    for (const cap of ['bestway_airjet', 'onoff.locked']) {
       if (this.hasCapability(cap)) {
         this.log(`Migrating: removing legacy capability "${cap}"`);
         await this.removeCapability(cap).catch(err =>
@@ -180,7 +188,7 @@ class LaZSpaDevice extends Homey.Device {
     this.registerCapabilityListener('onoff.airjet_high',  this._onCapabilityAirjetHigh.bind(this));
     this.registerCapabilityListener('onoff.hydrojet',     this._onCapabilityHydrojet.bind(this));
     this.registerCapabilityListener('onoff.filter',       this._onCapabilityFilter.bind(this));
-    // onoff.locked has no listener — lock state is read-only (bit2 from device).
+    // bestway_locked has no listener — lock state is read-only (bit2 from device).
 
     // Perform an immediate status sync, then start polling.
     await this._syncStatus().catch(err => this.error('Initial sync failed:', err.message));
@@ -208,6 +216,10 @@ class LaZSpaDevice extends Homey.Device {
 
     if (pollInterval !== rawInterval) {
       this.log(`Poll interval out of range (${rawInterval}s) — clamped to ${pollInterval}s`);
+      // Write the corrected value back so the UI reflects the actual value in use.
+      this.setSettings({ poll_interval: pollInterval }).catch(err =>
+        this.log('Failed to write back clamped poll interval:', err.message),
+      );
     }
 
     this._client = new BestwayClient({ region });
@@ -406,7 +418,7 @@ class LaZSpaDevice extends Homey.Device {
       // ── Panel lock ───────────────────────────────────────────────────────
       const lockedRaw = attrs[map.lockedBit] ?? attrs[map.locked];
       if (lockedRaw !== undefined) {
-        await this._setCapability('onoff.locked', lockedRaw !== 0 && lockedRaw !== false);
+        await this._setCapability('bestway_locked', lockedRaw !== 0 && lockedRaw !== false);
       }
 
       // ── Target temperature reached (E32) ─────────────────────────────────
@@ -440,22 +452,96 @@ class LaZSpaDevice extends Homey.Device {
       }
       this._prevAlarmActive = alarmActive;
 
+      // Update the Troubleshooting settings panel with fresh raw data.
+      this._updateDebugSettings(attrs);
+
       // Reset backoff and mark device as available after a successful sync.
       this._pollFailCount = 0;
       // #3 – Log instead of swallowing silently.
       this.setAvailable().catch(err => this.log('setAvailable failed:', err.message));
 
     } catch (err) {
+      const gizCode = err instanceof GizwitsError ? err.code : null;
+
+      // ── 9004: Token rejected by server ───────────────────────────────────
+      // The stored token looks valid locally but was refused. Clear the expiry
+      // so _getValidToken() forces a fresh login on the very next poll.
+      if (gizCode === 9004) {
+        this.log('Token rejected by server (9004) — will re-authenticate on next poll.');
+        this.setStoreValue('tokenExpiry', 0).catch(() => {});
+      }
+
+      // ── 9042: Device offline ──────────────────────────────────────────────
+      // The spa has no cloud connectivity (e.g. power cut, Wi-Fi issue).
+      // Mark unavailable immediately — no backoff increment, no 3-failure wait.
+      if (gizCode === 9042) {
+        this.log('Device is offline (9042).');
+        this._updateDebugSettings(null, this.homey.__('error.device_offline'));
+        this.setUnavailable(this.homey.__('error.device_offline')).catch(e =>
+          this.log('setUnavailable failed:', e.message),
+        );
+        throw err;
+      }
+
       this._pollFailCount++;
       this.error(`Sync failed (consecutive failures: ${this._pollFailCount}):`, err.message);
+
+      // Update the Troubleshooting settings panel with the error.
+      this._updateDebugSettings(null, err.message);
+
       if (this._pollFailCount >= 3) {
-        // #3 – Log instead of swallowing silently.
         this.setUnavailable(err.message).catch(e =>
           this.log('setUnavailable failed:', e.message),
         );
       }
       throw err;
     }
+  }
+
+  // ── Troubleshooting settings ─────────────────────────────────────────────
+
+  /**
+   * Writes the latest raw device data into the read-only "Troubleshooting"
+   * section of the device settings so the user can inspect live values
+   * without needing developer tools.
+   *
+   * @param {object|null} attrs  Raw attr object from the Gizwits API, or null on error.
+   * @param {string|null} error  Error message, or null on success.
+   */
+  _updateDebugSettings(attrs, error = null) {
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+
+    // Build status text — always append a warning for unknown/unsupported models.
+    let statusText = error ? `Error: ${error}` : 'OK ✓';
+    if (this._attrMap.isUnknown) {
+      const pn = this.getData().productName ?? '?';
+      statusText += ` | ⚠️ Unknown model "${pn}" – fallback mapping active`;
+    }
+
+    const updates = {
+      debug_last_sync: timestamp,
+      debug_status:    statusText,
+      debug_product:   this.getData().productName ?? '–',
+      debug_region:    this._resolveRegion(),
+    };
+
+    if (attrs) {
+      // Collect active E-codes (excluding E32 which is not a fault).
+      const activeCodes = Object.entries(attrs)
+        .filter(([key, val]) => /^E\d{2}$/.test(key) && key !== 'E32' && val !== 0)
+        .map(([key]) => key);
+
+      updates.debug_errors = activeCodes.length > 0 ? activeCodes.join(', ') : '–';
+
+      // Format all attrs as readable key: value pairs.
+      updates.debug_raw = Object.entries(attrs)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(' | ');
+    }
+
+    this.setSettings(updates).catch(err =>
+      this.log('Failed to update debug settings:', err.message),
+    );
   }
 
   // ── Flow trigger helpers ─────────────────────────────────────────────────

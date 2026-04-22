@@ -1,5 +1,25 @@
 {
   "pair": {
+    "connect": {
+      "title":       "Lay-Z-Spa verbinden",
+      "description": "Gib den Freigabecode aus der Bestway Smart Hub App ein, um deinen Spa zu Homey hinzuzufügen.",
+      "button":      "Verbinden",
+      "steps": {
+        "1": "Bestway Smart Hub App öffnen",
+        "2": "Zum Spa gehen → ··· → Gerät freigeben",
+        "3": "Freigabecode kopieren (beginnt mit RW_Share_)",
+        "4": "Hier einfügen"
+      },
+      "error": {
+        "link_failed": "Verbindung fehlgeschlagen. Bitte Freigabecode prüfen und erneut versuchen.",
+        "no_devices":  "Keine Geräte gefunden. Stelle sicher, dass der Spa in der Bestway Smart Hub App eingerichtet ist."
+      }
+    },
+    "repair": {
+      "title":       "Lay-Z-Spa neu verknüpfen",
+      "description": "Gib einen neuen Freigabecode ein, um die Verbindung wiederherzustellen.",
+      "button":      "Neu verknüpfen"
+    },
     "error": {
       "login_failed": "Anmeldung auf allen Servern fehlgeschlagen (EU, US, Global). Bitte E-Mail-Adresse und Passwort prüfen.",
       "wrong_password": "Falsches Passwort. Bitte erneut versuchen.",

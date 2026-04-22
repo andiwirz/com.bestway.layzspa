@@ -1,6 +1,6 @@
 {
   "id": "com.bestway.layzspa",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "compatibility": ">=12.0.0",
   "sdk": 3,
   "platforms": [
@@ -473,8 +473,8 @@
     {
       "id": "lay-z-spa",
       "name": {
-        "en": "Lay-Z-Spa",
-        "de": "Lay-Z-Spa"
+        "en": "Lay-Z-Spa (Smart Hub Account)",
+        "de": "Lay-Z-Spa (Smart Hub Konto)"
       },
       "class": "other",
       "capabilities": [
@@ -714,6 +714,112 @@
               "de": "Passwort"
             }
           }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "title": {
+            "en": "Select your Lay-Z-Spa",
+            "de": "Lay-Z-Spa auswählen"
+          },
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices",
+          "title": {
+            "en": "Add your Lay-Z-Spa",
+            "de": "Lay-Z-Spa hinzufügen"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lay-z-spa-connect",
+      "name": {
+        "en": "Lay-Z-Spa (Share Code)",
+        "de": "Lay-Z-Spa (Freigabecode)"
+      },
+      "class": "other",
+      "capabilities": [
+        "onoff.airjet_low",
+        "onoff.airjet_high",
+        "onoff",
+        "measure_temperature",
+        "target_temperature",
+        "onoff.hydrojet",
+        "onoff.filter",
+        "onoff.heating",
+        "alarm_generic",
+        "bestway_temp_reached"
+      ],
+      "capabilitiesOptions": {
+        "target_temperature": {
+          "min": 20,
+          "max": 40,
+          "step": 1
+        },
+        "onoff.heating": {
+          "title": { "en": "Heating", "de": "Heizung" },
+          "uiComponent": "button"
+        },
+        "onoff.airjet_low": {
+          "title": { "en": "AirJet Massage Low", "de": "AirJet Massage Low" },
+          "uiComponent": "button"
+        },
+        "onoff.airjet_high": {
+          "title": { "en": "AirJet Massage High", "de": "AirJet Massage High" },
+          "uiComponent": "button"
+        },
+        "onoff.hydrojet": {
+          "title": { "en": "HydroJet Massage", "de": "HydroJet Massage" },
+          "uiComponent": "button"
+        },
+        "onoff.filter": {
+          "title": { "en": "Filter", "de": "Filter" },
+          "uiComponent": "button"
+        },
+        "alarm_generic": {
+          "title": { "en": "Error", "de": "Fehler" }
+        }
+      },
+      "settings": [
+        {
+          "id": "poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Poll interval (seconds)",
+            "de": "Abfrageintervall (Sekunden)"
+          },
+          "hint": {
+            "en": "How often the app fetches updates from the Bestway cloud (10–300 seconds). Default: 60.",
+            "de": "Wie oft die App Updates aus der Bestway-Cloud abruft (10–300 Sekunden). Standard: 60."
+          },
+          "value": 60,
+          "attr": { "min": 10, "max": 300 }
+        }
+      ],
+      "platforms": ["local"],
+      "connectivity": ["cloud"],
+      "images": {
+        "small":  "/drivers/lay-z-spa-connect/assets/images/small.png",
+        "large":  "/drivers/lay-z-spa-connect/assets/images/large.png",
+        "xlarge": "/drivers/lay-z-spa-connect/assets/images/xlarge.png"
+      },
+      "repair": [
+        {
+          "id": "repair_share_code",
+          "title": {
+            "en": "Re-link your Lay-Z-Spa",
+            "de": "Lay-Z-Spa neu verknüpfen"
+          }
+        }
+      ],
+      "pair": [
+        {
+          "id": "enter_code"
         },
         {
           "id": "list_devices",

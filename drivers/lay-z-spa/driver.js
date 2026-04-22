@@ -91,6 +91,56 @@ class LaZSpaDriver extends Homey.Driver {
       );
   }
 
+  // ── Repair ──────────────────────────────────────────────────────────────
+
+  /**
+   * Lets the user update their Bestway credentials without removing and
+   * re-adding the device (e.g. after a password change).
+   *
+   * onRepair lives on the Driver (not Device) per Homey SDK v3 convention.
+   * The device being repaired is passed as the second argument.
+   */
+  async onRepair(session, device) {
+    this.log('Repair session started for:', device.getName());
+
+    session.setHandler('login', async ({ username, password }) => {
+      this.log('Repair: attempting login for', username);
+
+      try {
+        const auth = await loginWithRegionFallback(username, password);
+
+        // Persist updated credentials and token.
+        await device.setStoreValue('username',    username);
+        await device.setStoreValue('password',    password);
+        await device.setStoreValue('region',      auth.region);
+        await device.setStoreValue('userToken',   auth.userToken);
+        await device.setStoreValue('userId',      auth.userId);
+        await device.setStoreValue('tokenExpiry', auth.expiry);
+
+        // Reset in-memory state so the next poll uses the new credentials.
+        device._tokenRefreshPromise = null;
+        device._client = new BestwayClient({ region: auth.region });
+
+        await device.setSettings({ region: auth.region }).catch(err =>
+          this.log('Repair: failed to sync region setting:', err.message),
+        );
+
+        this.log('Repair: credentials updated, region:', auth.region);
+        device.setAvailable().catch(err =>
+          this.log('Repair: setAvailable failed:', err.message),
+        );
+        return true;
+      } catch (err) {
+        this.error('Repair: login failed:', err.message);
+        const code   = err instanceof GizwitsError ? err.code : null;
+        const msgKey = code === 9020
+          ? 'pair.error.wrong_password'
+          : 'pair.error.login_failed';
+        throw new Error(this.homey.__(msgKey));
+      }
+    });
+  }
+
   // ── Pairing ─────────────────────────────────────────────────────────────
 
   async onPair(session) {

@@ -7,5 +7,8 @@
   },
   "1.0.2": {
     "en": "Fixed: Airjet attrs, token 9004/9042 handling, panel lock icon, poll interval writeback — New: panel lock flow condition, HydroJet hint, unknown model warning, App Store readmes"
+  },
+  "1.0.3": {
+    "en": "add Lay-Z-Spa (Share Code)"
   }
 }

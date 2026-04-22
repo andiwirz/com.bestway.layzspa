@@ -228,57 +228,6 @@ class LaZSpaDevice extends Homey.Device {
     this.log('Settings updated — region:', region, '| poll interval:', pollInterval, 's');
   }
 
-  // ── Repair ───────────────────────────────────────────────────────────────
-
-  /**
-   * Lets the user update their Bestway credentials without removing and
-   * re-adding the device (e.g. after a password change).
-   *
-   * #2 – Uses the shared loginWithRegionFallback helper instead of
-   * duplicating the region-loop logic from onPair.
-   */
-  async onRepair(session) {
-    this.log('Repair session started for:', this.getName());
-
-    session.setHandler('login', async ({ username, password }) => {
-      this.log('Repair: attempting login for', username);
-
-      try {
-        const auth = await loginWithRegionFallback(username, password);
-
-        // Persist updated credentials and token.
-        await this.setStoreValue('username',    username);
-        await this.setStoreValue('password',    password);
-        await this.setStoreValue('region',      auth.region);
-        await this.setStoreValue('userToken',   auth.userToken);
-        await this.setStoreValue('userId',      auth.userId);
-        await this.setStoreValue('tokenExpiry', auth.expiry);
-
-        // Reset in-memory state so the next poll uses the new credentials.
-        this._tokenRefreshPromise = null;
-        this._client = new BestwayClient({ region: auth.region });
-
-        // #3 – Log instead of swallowing the error silently.
-        await this.setSettings({ region: auth.region }).catch(err =>
-          this.log('Repair: failed to sync region setting:', err.message),
-        );
-
-        this.log('Repair: credentials updated, region:', auth.region);
-        this.setAvailable().catch(err =>
-          this.log('Repair: setAvailable failed:', err.message),
-        );
-        return true;
-      } catch (err) {
-        this.error('Repair: login failed:', err.message);
-        const code    = err instanceof GizwitsError ? err.code : null;
-        const msgKey  = code === 9020
-          ? 'pair.error.wrong_password'
-          : 'pair.error.login_failed';
-        throw new Error(this.homey.__(msgKey));
-      }
-    });
-  }
-
   // ── Polling ──────────────────────────────────────────────────────────────
 
   _getPollIntervalMs() {

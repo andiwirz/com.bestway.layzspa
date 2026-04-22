@@ -1,21 +1,34 @@
 # Bestway Lay-Z-Spa for Homey
 
-Control your Bestway Lay-Z-Spa hot tub directly from Homey. The app connects to the Bestway Smart Hub cloud (Gizwits API) and keeps the device state in sync automatically.
-
-Tested with the Hydrojet SPA Heater with WIFI as used in the Bestway® LAY-Z-SPA® Dominica HydroJet™ Energy Plus whirlpool with app control.
+Control your Bestway Lay-Z-Spa hot tub directly from Homey. The app supports both generations of Bestway cloud infrastructure and keeps the device state in sync automatically.
 
 ---
 
 ## Supported Models
 
-| API Product Name | Device Generation |
+### Driver 1 — Lay-Z-Spa (V01 · Gizwits API)
+
+Connects via your Bestway Smart Hub account (email + password).
+
+| API Product Name | Device |
 |---|---|
 | `Airjet` | Basic AirJet spa (e.g. Miami, Monaco) |
 | `Airjet_V01` | V01 AirJet spa (e.g. Helsinki, Paris) |
 | `Hydrojet` | HydroJet spa |
 | `Hydrojet_Pro` | HydroJet Pro spa (e.g. Dominica HydroJet™ Energy Plus) |
 
-> **Note:** V02 models (Airjet V02, Hydrojet V02, etc.) use a different AWS IoT backend and are not supported.
+> Unknown product names fall back to the HydroJet Pro mapping with a warning in the Troubleshooting panel.
+
+### Driver 2 — Lay-Z-Spa Connect (V02 · SmartHub AWS IoT)
+
+Connects via a share code generated in the Bestway Smart Hub app — no account credentials required.
+
+| Product Series | Device |
+|---|---|
+| `AIRJET` | Airjet V02 |
+| `ULTRAFIT_AIRJET` | Ultrafit Airjet V02 |
+| `HYDROJET` | Hydrojet V02 |
+| `HYDROJET_PRO` | Hydrojet Pro V02 |
 
 ---
 
@@ -28,13 +41,13 @@ Tested with the Hydrojet SPA Heater with WIFI as used in the Bestway® LAY-Z-SPA
 - **HydroJet** — Toggle water jet massage on/off (HydroJet models only)
 - **Filter** — Run or stop the filter pump independently
 - **Heating** — Toggle the heater on/off independently
-- **Panel Lock** — Read-only display of the physical keypad lock state
+- **Panel Lock** — Read-only display of the physical keypad lock state *(V01 only)*
 
 ### Status Display
 - **Current water temperature** — Live reading from the device sensor
-- **Target temperature reached** — Indicator when the set temperature has been reached (E32)
+- **Target temperature reached** — Indicator when the set temperature has been reached
 - **Error alarm** — Generic alarm flag when any fault code is active
-- **Error details** — Human-readable description of active error codes (E01–E31)
+- **Error details** — Human-readable description of active error codes *(V01: E01–E31)*
 
 ### Flow Cards
 
@@ -50,15 +63,15 @@ Tested with the Hydrojet SPA Heater with WIFI as used in the Bestway® LAY-Z-SPA
 - Water temperature is below / not below `[x]` °C
 - Target temperature is / is not reached
 - AirJet is / is not active
+- Panel lock is / is not active
 
 **Actions (Then…)**
 - Set AirJet level *(Off / Low / High)*
-- Turn HydroJet on or off
+- Turn HydroJet on or off *(HydroJet models only)*
 - Turn heating on or off
 - Turn filter on or off
 
-### Automation
-All controls are available as Flow cards, so you can build automations such as:
+### Automation Examples
 - Heat the spa to target temperature before you arrive home
 - Send a notification when the target temperature is reached
 - Turn off the filter at night and back on in the morning
@@ -66,19 +79,60 @@ All controls are available as Flow cards, so you can build automations such as:
 
 ---
 
+## Pairing
+
+### V01 — Bestway Smart Hub account
+1. Open the Homey app → **Devices** → **+** → search for *Lay-Z-Spa*
+2. Select **Lay-Z-Spa**
+3. Sign in with your **Bestway Smart Hub** account (email + password)
+4. Select your spa from the list — offline devices are marked *(offline)*
+5. The device is added and starts syncing automatically
+
+Login is attempted on EU, US and Global regions automatically — no manual region selection needed.
+
+### V02 — SmartHub Connect (share code)
+1. Open the Homey app → **Devices** → **+** → search for *Lay-Z-Spa*
+2. Select **Lay-Z-Spa (Connect / V02)**
+3. Open the **Bestway Smart Hub** app on your phone
+4. Go to your spa → **···** → **Share Device** and copy the share code (`RW_Share_…`)
+5. Paste the code into Homey and tap **Connect**
+6. Select your spa from the list
+
+The share code is tried on both EU and US endpoints automatically.
+
+---
+
+## Repair
+
+### V01 — Update credentials
+If your Bestway password changes: **Device → Settings → Repair**, then enter your new email and password.
+
+### V02 — Re-link device
+If the connection is permanently lost (e.g. share code revoked): **Device → Settings → Repair**, then enter a new share code from the Bestway Smart Hub app.
+
+---
+
 ## Settings
+
+### V01
 
 | Setting | Description |
 |---|---|
-| **Poll interval** | How often the app fetches status from the cloud (10–300 s, default 30 s). Shorter intervals give faster updates but increase cloud traffic. |
-| **Server region** | Gizwits API region (EU / US / Global). Set automatically during pairing; only change if login fails. |
+| **Poll interval** | How often the app fetches status from the cloud (10–300 s, default 30 s). |
+| **Server region** | Gizwits API region (EU / US / Global). Set automatically during pairing. |
 
-### Troubleshooting Panel
-A read-only panel in the device settings shows live diagnostic data after every sync:
+### V02
+
+| Setting | Description |
+|---|---|
+| **Poll interval** | How often the app fetches status from the cloud (10–300 s, default 60 s). |
+
+### Troubleshooting Panel (V01 only)
+A read-only panel in the device settings shows live diagnostic data:
 
 | Field | Content |
 |---|---|
-| Last sync | Timestamp of the last successful or failed API call |
+| Last sync | Timestamp of the last API call |
 | Status | `OK ✓` or `Error: <message>` |
 | Device model | `product_name` as reported by the Gizwits API |
 | Active region | The region currently used for API calls |
@@ -87,19 +141,7 @@ A read-only panel in the device settings shows live diagnostic data after every 
 
 ---
 
-## Pairing
-
-1. Open the Homey app → **Devices** → **+** → search for *Lay-Z-Spa*
-2. Sign in with your **Bestway Smart Hub** account (email + password)
-3. Select your spa from the list — offline devices are marked *(offline)*
-4. The device is added and starts syncing automatically
-
-### Credential Repair
-If your Bestway password changes, use **Device → Settings → Repair** to update the credentials without removing and re-adding the device.
-
----
-
-## Error Codes
+## Error Codes (V01)
 
 | Code | Meaning |
 |---|---|
@@ -116,17 +158,30 @@ If your Bestway password changes, use **Device → Settings → Repair** to upda
 
 ## Technical Details
 
-- **API:** Bestway / Gizwits V01 REST API
+### V01 — Gizwits API
+- **Backend:** Bestway / Gizwits V01 REST API
 - **Regions:** EU (`euapi.gizwits.com`), US (`usapi.gizwits.com`), Global (`api.gizwits.com`)
-- **Authentication:** Token-based with automatic refresh before expiry
+- **Authentication:** Token-based with automatic refresh before expiry; force re-auth on error 9004
+- **Offline detection:** Error 9042 marks device unavailable immediately (no backoff wait)
 - **Polling:** Configurable interval with exponential backoff on failure (doubles per failure, max 5 min)
 - **Control retry:** Failed commands are retried once after 2 seconds
+
+### V02 — SmartHub AWS IoT
+- **Backend:** Bestway SmartHub cloud (AWS IoT device shadows)
+- **Regions:** EU (`smarthub-eu.bestwaycorp.com`), US (`smarthub-us.bestwaycorp.com`)
+- **Authentication:** Credential-free visitor token tied to a persistent visitor ID
+- **Encryption:** Control commands AES-256-CBC encrypted (key derived per-request from HMAC sign)
+- **Polling:** Configurable interval with exponential backoff on failure (doubles per failure, max 5 min)
+- **Control retry:** Failed commands are retried once with token refresh
+
+### General
 - **Homey SDK:** v3, Homey ≥ 12.0.0
+- **Flow triggers:** Rising-edge detection — fires only on `false → true` transitions
 
 ---
 
 ## Contributing & Credits
 
-Pull requests welcome. API mapping based on analysis of the [ha-bestway](https://github.com/cdpuk/ha-bestway) Home Assistant integration.
+Pull requests welcome. V01 API mapping based on analysis of the [ha-bestway](https://github.com/cdpuk/ha-bestway) Home Assistant integration.
 
 Bugs and feature requests: [GitHub Issues](https://github.com/andiwirz/com.bestway.layzspa/issues)

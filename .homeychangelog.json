@@ -10,5 +10,8 @@
   },
   "1.0.3": {
     "en": "add Lay-Z-Spa (Share Code)"
+  },
+  "1.0.4": {
+    "en": "fix titleFormatted on 6 cards"
   }
 }

@@ -1,6 +1,6 @@
 {
   "id": "com.bestway.layzspa",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "compatibility": ">=12.0.0",
   "sdk": 3,
   "platforms": [
@@ -150,6 +150,10 @@
           "en": "Heating is !{active|not active}",
           "de": "Heizung ist !{aktiv|nicht aktiv}"
         },
+        "titleFormatted": {
+          "en": "Heating is !{active|not active}",
+          "de": "Heizung ist !{aktiv|nicht aktiv}"
+        },
         "args": [
           {
             "name": "device",
@@ -164,6 +168,10 @@
           "en": "Filter is !{running|not running}",
           "de": "Filter ist !{aktiv|nicht aktiv}"
         },
+        "titleFormatted": {
+          "en": "Filter is !{running|not running}",
+          "de": "Filter ist !{aktiv|nicht aktiv}"
+        },
         "args": [
           {
             "name": "device",
@@ -175,6 +183,10 @@
       {
         "id": "spa_error_active",
         "title": {
+          "en": "Spa has !{an error|no error}",
+          "de": "Spa hat !{einen Fehler|keinen Fehler}"
+        },
+        "titleFormatted": {
           "en": "Spa has !{an error|no error}",
           "de": "Spa hat !{einen Fehler|keinen Fehler}"
         },
@@ -250,6 +262,10 @@
           "en": "Target temperature is !{reached|not reached}",
           "de": "Zieltemperatur ist !{erreicht|nicht erreicht}"
         },
+        "titleFormatted": {
+          "en": "Target temperature is !{reached|not reached}",
+          "de": "Zieltemperatur ist !{erreicht|nicht erreicht}"
+        },
         "args": [
           {
             "name": "device",
@@ -264,6 +280,10 @@
           "en": "AirJet is !{active|not active}",
           "de": "AirJet ist !{aktiv|nicht aktiv}"
         },
+        "titleFormatted": {
+          "en": "AirJet is !{active|not active}",
+          "de": "AirJet ist !{aktiv|nicht aktiv}"
+        },
         "args": [
           {
             "name": "device",
@@ -275,6 +295,10 @@
       {
         "id": "spa_locked",
         "title": {
+          "en": "Panel lock is !{active|not active}",
+          "de": "Tastensperre ist !{aktiv|nicht aktiv}"
+        },
+        "titleFormatted": {
           "en": "Panel lock is !{active|not active}",
           "de": "Tastensperre ist !{aktiv|nicht aktiv}"
         },

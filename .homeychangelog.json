@@ -12,6 +12,9 @@
     "en": "add Lay-Z-Spa (Share Code)"
   },
   "1.0.4": {
-    "en": "fix titleFormatted on 6 cards"
+    "en": "Fixed Flow condition cards: added missing titleFormatted fields and corrected boolean toggle syntax to !{{a|b}}"
+  },
+  "1.0.5": {
+    "en": "Fixed Flow condition cards: added missing titleFormatted fields and corrected boolean toggle syntax to !{{a|b}}"
   }
 }
